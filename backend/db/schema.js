@@ -17,8 +17,6 @@ export const productSchema = pgTable("products", {
   unit: text("unit").notNull(),
   inStock: integer("in_stock").notNull(),
   description: text("description"),
-  createdAt: timestamp("created_at")
-    .notNull()
-    .default(() => Date.now()),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
   updatedAt: timestamp("updated_at").notNull().defaultNow(),
 });
