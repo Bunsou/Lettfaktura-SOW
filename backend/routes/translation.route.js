@@ -12,7 +12,7 @@ router.get("/:language", async (req, res) => {
     const rows = await db
       .select({ key: translationSchema.key, value: translationSchema.value })
       .from(translationSchema)
-      .where(eq(translactionSchema.language, language));
+      .where(eq(translationSchema.language, language));
 
     const translations = Object.fromEntries(
       rows.map((row) => [row.key, row.value]),
