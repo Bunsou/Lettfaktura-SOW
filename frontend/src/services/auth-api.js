@@ -13,8 +13,12 @@ export async function loginUser(email, password) {
 }
 
 export async function checkAuth() {
-  const res = await fetch(`${API_URL}/user/me`, {
-    credentials: "include",
-  });
-  return res.ok;
+  try {
+    const res = await fetch(`${API_URL}/user/me`, {
+      credentials: "include",
+    });
+    return res.ok;
+  } catch {
+    return false;
+  }
 }
