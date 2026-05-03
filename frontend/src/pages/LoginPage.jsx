@@ -4,6 +4,7 @@ import "./LoginPage.css";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
 import { loginUser, checkAuth } from "../services/auth-api";
+import { useLanguage } from "../context/LanguageContext";
 
 const LoginPage = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,7 @@ const LoginPage = () => {
   const [serverError, setServerError] = useState("");
 
   const navigate = useNavigate();
+  const { t } = useLanguage();
 
   useEffect(() => {
     checkAuth().then((isAuthenticated) => {
@@ -28,18 +30,23 @@ const LoginPage = () => {
     setServerError("");
 
     if (!email) {
-      setEmailError("Email is required");
+      setEmailError(t("email_is_required"));
       return;
     }
 
     const emailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
     if (!emailValid) {
-      setEmailError("Please enter a valid email address");
+      setEmailError(t("please_enter_a_valid_email_address"));
       return;
     }
 
     if (!password) {
-      setPasswordError("Password is required");
+      setPasswordError(t("this_field_cannot_be_empty"));
+      return;
+    }
+
+    if (password.length < 4) {
+      setPasswordError(t("this_field_must_be_at_least_4_characters_long"));
       return;
     }
 
@@ -49,16 +56,12 @@ const LoginPage = () => {
       if (data.success) {
         navigate("/pricelist");
       } else if (status === 500) {
-        setServerError(
-          "Something went wrong with our server, please try again later",
-        );
+        setServerError(t("something_went_wrong_with_our_server"));
       } else {
-        setServerError("Invalid email or password, please try again");
+        setServerError(t("invalid_email_or_password"));
       }
     } catch (err) {
-      setServerError(
-        "Something went wrong with our server, please try again later",
-      );
+      setServerError(t("something_went_wrong_with_our_server"));
     }
   };
 
@@ -67,25 +70,25 @@ const LoginPage = () => {
       <Navbar />
       <div className="main">
         <div className="login-card">
-          <h1 className="login-title">Log in</h1>
+          <h1 className="login-title">{t("log_in")}</h1>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} noValidate>
             <div className="form-group">
-              <label>Enter your email address</label>
+              <label>{t("enter_your_email_address")}</label>
               <input
                 type="email"
-                placeholder="Email address"
+                placeholder={t("email_address")}
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
               />
               {emailError && <p className="error">{emailError}</p>}
             </div>
             <div className="form-group">
-              <label>Enter your password</label>
+              <label>{t("enter_your_password")}</label>
               <div className="password">
                 <input
                   type={showPassword ? "text" : "password"}
-                  placeholder="Password"
+                  placeholder={t("password")}
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                 />
@@ -102,13 +105,13 @@ const LoginPage = () => {
 
             {serverError && <p className="server-error">{serverError}</p>}
             <button type="submit" className="login-button">
-              Log in
+              {t("log_in")}
             </button>
           </form>
 
           <div className="card-links">
-            <a href="#register">Register</a>
-            <a href="#forgot-password">Forgotten password?</a>
+            <a href="#register">{t("register")}</a>
+            <a href="#forgot-password">{t("forgotten_password")}</a>
           </div>
         </div>
       </div>
@@ -116,9 +119,9 @@ const LoginPage = () => {
         <div className="footer-top">
           <span>123 Fakturera</span>
           <div className="footer-links">
-            <a href="#home">Home</a>
-            <a href="#order">Order</a>
-            <a href="#contact-us">Contact us</a>
+            <a href="#home">{t("home")}</a>
+            <a href="#order">{t("order")}</a>
+            <a href="#contact-us">{t("contact_us")}</a>
           </div>
         </div>
         <div className="footer-divider"></div>

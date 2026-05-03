@@ -1,10 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { Menu } from "lucide-react";
 import "./Navbar.css";
+import { useLanguage } from "../context/LanguageContext";
 
 function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [langOpen, setLangOpen] = useState(false);
+
+  const { t, lang, changeLanguage } = useLanguage();
 
   const menuRef = useRef(null);
   const langRef = useRef(null);
@@ -25,7 +28,7 @@ function Navbar() {
 
   return (
     <header className="navbar">
-      <div ref={menuRef}>
+      <div className="navbar-left" ref={menuRef}>
         <button className="hamburger" onClick={() => setMenuOpen(!menuOpen)}>
           <Menu color="white" size={28} />
         </button>
@@ -33,51 +36,57 @@ function Navbar() {
         {menuOpen && (
           <div className="hamburger-menu">
             <a href="#home" onClick={() => setMenuOpen(false)}>
-              Home
+              {t("home")}
             </a>
             <a href="#order" onClick={() => setMenuOpen(false)}>
-              Order
+              {t("order")}
             </a>
             <a href="#our-customers" onClick={() => setMenuOpen(false)}>
-              Our Customers
+              {t("our_customers")}
             </a>
             <a href="#about-us" onClick={() => setMenuOpen(false)}>
-              About us
+              {t("about_us")}
             </a>
             <a href="#contact-us" onClick={() => setMenuOpen(false)}>
-              Contact Us
+              {t("contact_us")}
             </a>
           </div>
         )}
+        <img
+          src="https://storage.123fakturera.se/public/icons/diamond.png"
+          alt="logo"
+          className="navbar-logo"
+        />
       </div>
 
-      <img
-        src="https://storage.123fakturera.se/public/icons/diamond.png"
-        alt="logo"
-        className="navbar-logo"
-      />
       <div className="navbar-right">
         <nav className="navbar-links">
-          <a href="#home">Home</a>
-          <a href="#order">Order</a>
-          <a href="#our-customers">Our Customers</a>
-          <a href="#about-us">About us</a>
-          <a href="#contact-us">Contact Us</a>
+          <a href="#home">{t("home")}</a>
+          <a href="#order">{t("order")}</a>
+          <a href="#our-customers">{t("our_customers")}</a>
+          <a href="#about-us">{t("about_us")}</a>
+          <a href="#contact-us">{t("contact_us")}</a>
         </nav>
 
         <div className="lang-selector" ref={langRef}>
           <div className="lang-trigger" onClick={() => setLangOpen(!langOpen)}>
-            <span>English</span>
+            <span>{lang === "sv" ? "Svenska" : "English"}</span>
             <img
-              src="https://storage.123fakturere.no/public/flags/GB.png"
-              alt="EN"
+              src={`https://storage.123fakturere.no/public/flags/${lang === "sv" ? "SE" : "GB"}.png`}
+              alt={lang}
               className="lang-icon"
             />
           </div>
 
           {langOpen && (
             <div className="lang-dropdown">
-              <div className="lang-option" onClick={() => setLangOpen(false)}>
+              <div
+                className="lang-option"
+                onClick={() => {
+                  changeLanguage("sv");
+                  setLangOpen(false);
+                }}
+              >
                 <span>Svenska</span>
                 <img
                   src="https://storage.123fakturere.no/public/flags/SE.png"
@@ -85,7 +94,14 @@ function Navbar() {
                   className="lang-icon"
                 />
               </div>
-              <div className="lang-option" onClick={() => setLangOpen(false)}>
+
+              <div
+                className="lang-option"
+                onClick={() => {
+                  changeLanguage("en");
+                  setLangOpen(false);
+                }}
+              >
                 <span>English</span>
                 <img
                   src="https://storage.123fakturere.no/public/flags/GB.png"
