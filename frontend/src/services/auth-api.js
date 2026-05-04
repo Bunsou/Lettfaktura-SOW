@@ -22,3 +22,10 @@ export async function checkAuth() {
     return false;
   }
 }
+
+export async function logoutUser() {
+  await fetch(`${API_URL}/auth/logout`, {
+    method: "POST",
+    credentials: "include",
+  });
+}
