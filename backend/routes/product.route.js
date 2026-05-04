@@ -85,6 +85,7 @@ router.patch("/:id", async (req, res) => {
         unit,
         inStock,
         description,
+        updatedAt: new Date(),
       })
       .where(eq(productSchema.id, id))
       .returning();

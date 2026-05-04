@@ -7,15 +7,18 @@ import {
   ToggleLeft,
 } from "lucide-react";
 import "./ProductTable.css";
-import { fetchProducts } from "../services/product-api";
+import { fetchProducts, deleteProduct } from "../services/product-api";
 import NewProductModal from "./NewProductModal";
 import { useDebounce } from "../hooks/useDebounce";
+import EditProductModal from "./EditProductModal";
 
 function ProductTable() {
   const [products, setProducts] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [searchArticle, setSearchArticle] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
+  const [openMenuId, setOpenMenuId] = useState(null);
+  const [editingProduct, setEditingProduct] = useState(null);
 
   const debouncedArticle = useDebounce(searchArticle, 300);
   const debouncedProduct = useDebounce(searchProduct, 300);
@@ -23,6 +26,17 @@ function ProductTable() {
   async function loadProducts() {
     const data = await fetchProducts();
     setProducts(data);
+  }
+
+  function handleEdit(product) {
+    setEditingProduct(product);
+    setOpenMenuId(null);
+  }
+
+  async function handleDelete(id) {
+    await deleteProduct(id);
+    setOpenMenuId(null);
+    loadProducts();
   }
 
   useEffect(() => {
@@ -104,7 +118,7 @@ function ProductTable() {
         </thead>
         <tbody>
           {filteredProducts.map((product) => (
-            <tr key={product.id}>
+            <tr key={`${product.id}-${product.updatedAt}`}>
               <td className="col-arrow">
                 <span className="row-arrow">→</span>
               </td>
@@ -130,7 +144,29 @@ function ProductTable() {
                 <input defaultValue={product.description} />
               </td>
               <td className="col-action">
-                <MoreHorizontal size={18} />
+                <div className="action-menu-wrapper">
+                  <MoreHorizontal
+                    size={18}
+                    style={{ cursor: "pointer" }}
+                    onClick={() =>
+                      setOpenMenuId(
+                        openMenuId === product.id ? null : product.id,
+                      )
+                    }
+                  />
+
+                  {openMenuId === product.id && (
+                    <div className="row-dropdown">
+                      <button onClick={() => handleEdit(product)}>Edit</button>
+                      <button
+                        onClick={() => handleDelete(product.id)}
+                        className="delete-btn"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  )}
+                </div>
               </td>
             </tr>
           ))}
@@ -140,6 +176,13 @@ function ProductTable() {
         <NewProductModal
           onClose={() => setShowModal(false)}
           onCreated={loadProducts}
+        />
+      )}
+      {editingProduct && (
+        <EditProductModal
+          product={editingProduct}
+          onClose={() => setEditingProduct(null)}
+          onUpdated={loadProducts}
         />
       )}
     </div>

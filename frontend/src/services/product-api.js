@@ -18,3 +18,21 @@ export async function createProduct(product) {
   const data = await res.json();
   return data;
 }
+
+export async function updateProduct(id, updatedData) {
+  const res = await fetch(`${API_URL}/products/${id}`, {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    credentials: "include",
+    body: JSON.stringify(updatedData),
+  });
+  const data = await res.json();
+  return data;
+}
+
+export async function deleteProduct(id) {
+  await fetch(`${API_URL}/products/${id}`, {
+    method: "DELETE",
+    credentials: "include",
+  });
+}
