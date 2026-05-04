@@ -1,0 +1,155 @@
+.container {
+  min-height: 100vh;
+  background-image: url("https://storage.123fakturera.se/public/wallpapers/sverige43.jpg");
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Login card */
+
+.main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 40px 0;
+}
+
+.login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 500px;
+  max-width: 90%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.login-title {
+  color: red;
+  text-align: center;
+  font-size: 2rem;
+  margin-bottom: 24px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 20px;
+}
+
+.form-group input {
+  padding: 14px 20px;
+  border-radius: 20px;
+  border: 1px solid gray;
+  font-size: 16px;
+  width: 100%;
+}
+
+.password {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.password span {
+  position: absolute;
+  right: 20px;
+  cursor: pointer;
+  opacity: 0.5;
+}
+
+.login-button {
+  width: 250px;
+  display: block;
+  padding: 14px;
+  margin: 0 auto;
+  background-color: #07a31f;
+  color: white;
+  border: none;
+  border-radius: 50px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.card-links {
+  display: flex;
+  justify-content: center;
+  gap: 50px;
+  margin-top: 20px;
+}
+
+.card-links a {
+  text-decoration: none;
+  color: black;
+  cursor: pointer;
+}
+
+.error {
+  color: red;
+  font-size: 14px;
+  margin-top: 4px;
+}
+
+.server-error {
+  color: red;
+  font-size: 14px;
+  margin-bottom: 12px;
+  display: block;
+}
+
+/* Footer */
+
+.footer {
+  color: white;
+  padding: 16px 40px;
+}
+
+.footer-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.footer-links {
+  display: flex;
+  gap: 24px;
+}
+
+.footer-links a {
+  color: white;
+  text-decoration: none;
+}
+
+.footer-divider {
+  width: 100%;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.4);
+  margin-bottom: 12px;
+}
+
+.footer-copyright {
+  text-align: center;
+  font-size: 14px;
+  opacity: 0.85;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .login-card {
+    width: 80%;
+  }
+}
+
+@media (max-width: 600px) {
+  .login-card {
+    width: 95%;
+    border-radius: 20px;
+    padding: 24px;
+  }
+}

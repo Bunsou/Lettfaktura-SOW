@@ -1,0 +1,11 @@
+.pricelist-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #f5f7fa;
+}
+
+.pricelist-body {
+  flex: 1;
+  display: flex;
+}
