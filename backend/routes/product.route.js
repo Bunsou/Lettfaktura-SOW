@@ -1,6 +1,7 @@
 import { Router } from "express";
 import db from "../db/db_connect.js";
 import { productSchema } from "../db/schema.js";
+import { eq } from "drizzle-orm";
 
 const router = Router();
 
@@ -51,6 +52,55 @@ router.get("/", async (req, res) => {
       success: true,
       message: "Products fetched successfully",
       data: products,
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      data: null,
+    });
+  }
+});
+
+router.patch("/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const {
+      articleNo,
+      productService,
+      inPrice,
+      price,
+      unit,
+      inStock,
+      description,
+    } = req.body;
+
+    const updatedProduct = await db
+      .update(productSchema)
+      .set({
+        articleNo,
+        productService,
+        inPrice,
+        price,
+        unit,
+        inStock,
+        description,
+      })
+      .where(eq(productSchema.id, id))
+      .returning();
+
+    if (updatedProduct.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "Product not found",
+        data: null,
+      });
+    }
+
+    res.status(201).json({
+      success: true,
+      message: "Product updated successfully",
+      data: updatedProduct[0],
     });
   } catch (error) {
     res.status(500).json({
