@@ -7,10 +7,13 @@ import {
   ToggleLeft,
 } from "lucide-react";
 import "./ProductTable.css";
-import { fetchProducts, deleteProduct } from "../services/product-api";
+import {
+  fetchProducts,
+  deleteProduct,
+  updateProduct,
+} from "../services/product-api";
 import NewProductModal from "./NewProductModal";
 import { useDebounce } from "../hooks/useDebounce";
-import EditProductModal from "./EditProductModal";
 
 function ProductTable() {
   const [products, setProducts] = useState([]);
@@ -18,19 +21,26 @@ function ProductTable() {
   const [searchArticle, setSearchArticle] = useState("");
   const [searchProduct, setSearchProduct] = useState("");
   const [openMenuId, setOpenMenuId] = useState(null);
-  const [editingProduct, setEditingProduct] = useState(null);
 
   const debouncedArticle = useDebounce(searchArticle, 300);
   const debouncedProduct = useDebounce(searchProduct, 300);
 
+  const numberFields = ["articleNo", "inPrice", "price", "inStock"];
+  async function handleFieldBlur(id, field, newValue, oldValue) {
+    if (newValue === oldValue.toString()) return;
+
+    const value = numberFields.includes(field) ? Number(newValue) : newValue;
+
+    await updateProduct(id, { [field]: value });
+
+    setProducts((prev) =>
+      prev.map((p) => (p.id === id ? { ...p, [field]: value } : p)),
+    );
+  }
+
   async function loadProducts() {
     const data = await fetchProducts();
     setProducts(data);
-  }
-
-  function handleEdit(product) {
-    setEditingProduct(product);
-    setOpenMenuId(null);
   }
 
   async function handleDelete(id) {
@@ -43,14 +53,26 @@ function ProductTable() {
     loadProducts();
   }, []);
 
-  const filteredProducts = products.filter(
-    (p) =>
-      p.articleNo.toString().includes(debouncedArticle) &&
-      p.productService.toLowerCase().includes(debouncedProduct.toLowerCase()),
-  );
+  function handleNumberKey(e) {
+    const allowed = ["Backspace", "Delete", "ArrowLeft", "ArrowRight", "Tab"];
+    if (!/[0-9]/.test(e.key) && !allowed.includes(e.key)) {
+      e.preventDefault();
+    }
+  }
+
+  const filteredProducts = products
+    .filter(
+      (p) =>
+        p.articleNo.toString().includes(debouncedArticle) &&
+        p.productService.toLowerCase().includes(debouncedProduct.toLowerCase()),
+    )
+    .sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 
   return (
     <div className="product-table-container">
+      {openMenuId && (
+        <div className="overlay" onClick={() => setOpenMenuId(null)} />
+      )}
       <div className="toolbar">
         <div className="search-group">
           <div className="search-input">
@@ -58,18 +80,7 @@ function ProductTable() {
               placeholder="Search Article No..."
               value={searchArticle}
               onChange={(e) => setSearchArticle(e.target.value)}
-              onKeyDown={(e) => {
-                const allowed = [
-                  "Backspace",
-                  "Delete",
-                  "ArrowLeft",
-                  "ArrowRight",
-                  "Tab",
-                ];
-                if (!/[0-9]/.test(e.key) && !allowed.includes(e.key)) {
-                  e.preventDefault();
-                }
-              }}
+              onKeyDown={handleNumberKey}
             />
             <Search size={16} />
           </div>
@@ -123,25 +134,99 @@ function ProductTable() {
                 <span className="row-arrow">→</span>
               </td>
               <td className="col-article">
-                <input defaultValue={product.articleNo} />
+                <input
+                  defaultValue={product.articleNo}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "articleNo",
+                      e.target.value,
+                      product.articleNo,
+                    )
+                  }
+                  onKeyDown={handleNumberKey}
+                />
               </td>
               <td className="col-product">
-                <input defaultValue={product.productService} />
+                <input
+                  defaultValue={product.productService}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "productService",
+                      e.target.value,
+                      product.productService,
+                    )
+                  }
+                />
               </td>
               <td className="col-in-price">
-                <input defaultValue={product.inPrice} />
+                <input
+                  defaultValue={product.inPrice}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "inPrice",
+                      e.target.value,
+                      product.inPrice,
+                    )
+                  }
+                  onKeyDown={handleNumberKey}
+                />
               </td>
               <td className="col-price">
-                <input defaultValue={product.price} />
+                <input
+                  defaultValue={product.price}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "price",
+                      e.target.value,
+                      product.price,
+                    )
+                  }
+                  onKeyDown={handleNumberKey}
+                />
               </td>
               <td className="col-unit">
-                <input defaultValue={product.unit} />
+                <input
+                  defaultValue={product.unit}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "unit",
+                      e.target.value,
+                      product.unit,
+                    )
+                  }
+                />
               </td>
               <td className="col-in-stock">
-                <input defaultValue={product.inStock} />
+                <input
+                  defaultValue={product.inStock}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "inStock",
+                      e.target.value,
+                      product.inStock,
+                    )
+                  }
+                  onKeyDown={handleNumberKey}
+                />
               </td>
               <td className="col-description">
-                <input defaultValue={product.description} />
+                <input
+                  defaultValue={product.description}
+                  onBlur={(e) =>
+                    handleFieldBlur(
+                      product.id,
+                      "description",
+                      e.target.value,
+                      product.description,
+                    )
+                  }
+                />
               </td>
               <td className="col-action">
                 <div className="action-menu-wrapper">
@@ -157,7 +242,6 @@ function ProductTable() {
 
                   {openMenuId === product.id && (
                     <div className="row-dropdown">
-                      <button onClick={() => handleEdit(product)}>Edit</button>
                       <button
                         onClick={() => handleDelete(product.id)}
                         className="delete-btn"
@@ -176,13 +260,6 @@ function ProductTable() {
         <NewProductModal
           onClose={() => setShowModal(false)}
           onCreated={loadProducts}
-        />
-      )}
-      {editingProduct && (
-        <EditProductModal
-          product={editingProduct}
-          onClose={() => setEditingProduct(null)}
-          onUpdated={loadProducts}
         />
       )}
     </div>
